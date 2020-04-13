@@ -29,7 +29,6 @@ public class PerestroikaFixed extends ApplicationAdapter {
 
     float tiempoJuego;
     float alarmaMengua;
-    float duracionAlarmaMengua;
 
     int ranaX, ranaY;
     int estadoRana;   int RANA_VIVA = 1;  int RANA_MUERTA = 2;    // ver ENUMS
@@ -69,7 +68,6 @@ public class PerestroikaFixed extends ApplicationAdapter {
         columnas = 5;
 
         tiempoJuego = 0f;
-        alarmaMengua = duracionAlarmaMengua;
 
         respawn();
     }

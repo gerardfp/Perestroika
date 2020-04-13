@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.Random;
 
 
-public class Perestroika extends ApplicationAdapter {
+public class PerestroikaFixed extends ApplicationAdapter {
     Random random;
     SpriteBatch batch;
     BitmapFont font;
@@ -22,24 +22,10 @@ public class Perestroika extends ApplicationAdapter {
     int filas;
     int columnas;
 
-    float anchoColumna;
-    float altoFila;
-
     float[][] tamañosHojas;
     float[][] menguasHojas;
     float[][] alarmasHojas;
     int[][] estadosHojas;  int HOJA_FLOTANDO = 2; int HOJA_HUNDIENDOSE = 1; int HOJA_HUNDIDA = 0;   // ver ENUMS
-
-    int porcentageHojasInicial;
-
-    float tamañoHojaMaximo;
-    float tamañoHojaMinimo;
-
-    float menguaHojaMaximo;
-    float menguaHojaMinimo;
-
-    float tiempoReaparicionMaximo;
-    float tiempoReaparicionMinimo;
 
     float tiempoJuego;
     float alarmaMengua;
@@ -82,16 +68,7 @@ public class Perestroika extends ApplicationAdapter {
         filas = 3;
         columnas = 5;
 
-        menguaHojaMaximo = 200;
-        menguaHojaMinimo = 40;
-
-        tiempoReaparicionMaximo = 2.5f;
-        tiempoReaparicionMinimo = 0.5f;
-
-        porcentageHojasInicial = 66;
-
         tiempoJuego = 0f;
-        duracionAlarmaMengua = 0.3f;
         alarmaMengua = duracionAlarmaMengua;
 
         respawn();
@@ -99,14 +76,6 @@ public class Perestroika extends ApplicationAdapter {
 
     void levelUp(){
         level++;
-
-        if(level%2==0) {
-            filas++;
-        } else {
-            columnas++;
-        }
-
-        porcentageHojasInicial -= 3;
 
         respawn();
     }
@@ -117,32 +86,26 @@ public class Perestroika extends ApplicationAdapter {
         menguasHojas = new float[filas][columnas];
         alarmasHojas = new float[filas][columnas];
 
-        anchoColumna = 600f/(columnas+1);
-        altoFila = 400f/(filas+1);
-
-        tamañoHojaMaximo = anchoColumna*0.9f;
-        tamañoHojaMinimo =  anchoColumna*0.33f;
-
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                if(random.nextInt(100) < porcentageHojasInicial) {
+                if(random.nextInt(100) < 66) {
                     estadosHojas[i][j] = HOJA_FLOTANDO;
-                    tamañosHojas[i][j] = random(tamañoHojaMinimo, tamañoHojaMaximo);
-                    menguasHojas[i][j] = random(menguaHojaMinimo, menguaHojaMaximo);
+                    tamañosHojas[i][j] = random(30, 90);
+                    menguasHojas[i][j] = random(40, 200);
 
                 } else {
                     estadosHojas[i][j] = HOJA_HUNDIDA;
-                    alarmasHojas[i][j] = tiempoJuego + random(tiempoReaparicionMinimo, tiempoReaparicionMaximo);
+                    alarmasHojas[i][j] = tiempoJuego + random(0.5f, 2.5f);
                 }
             }
         }
 
         estadosHojas[0][0] = HOJA_FLOTANDO;
-        tamañosHojas[0][0] = tamañoHojaMaximo;
-        menguasHojas[0][0] = menguaHojaMinimo;
+        tamañosHojas[0][0] = 90;
+        menguasHojas[0][0] = 0.5f;
 
         estadosHojas[filas-1][columnas-1] = HOJA_FLOTANDO;
-        tamañosHojas[filas-1][columnas-1] = tamañoHojaMaximo;
+        tamañosHojas[filas-1][columnas-1] = 90;
         menguasHojas[filas-1][columnas-1] = 0;
 
         estadoRana = RANA_VIVA;
@@ -173,7 +136,7 @@ public class Perestroika extends ApplicationAdapter {
         if (estadoRana == RANA_VIVA) {
 
             if (tiempoJuego > alarmaMengua) {
-                alarmaMengua = tiempoJuego + duracionAlarmaMengua;
+                alarmaMengua = tiempoJuego + 0.3f;
 
                 for (int i = 0; i < filas; i++) {
                     for (int j = 0; j < columnas; j++) {
@@ -181,18 +144,18 @@ public class Perestroika extends ApplicationAdapter {
                         if (estadosHojas[i][j] == HOJA_FLOTANDO) {
                             tamañosHojas[i][j] -= menguasHojas[i][j] * Gdx.graphics.getDeltaTime();
 
-                            if (tamañosHojas[i][j] < tamañoHojaMinimo) {
+                            if (tamañosHojas[i][j] < 30) {
                                 estadosHojas[i][j] = HOJA_HUNDIENDOSE;
                             }
 
                         } else if (estadosHojas[i][j] == HOJA_HUNDIENDOSE){
                             estadosHojas[i][j] = HOJA_HUNDIDA;
-                            alarmasHojas[i][j] = tiempoJuego + random(tiempoReaparicionMinimo, tiempoReaparicionMaximo);
+                            alarmasHojas[i][j] = tiempoJuego + random(0.5f, 2.5f);
 
                         } else if (estadosHojas[i][j] == HOJA_HUNDIDA && tiempoJuego > alarmasHojas[i][j]){
                             estadosHojas[i][j] = HOJA_FLOTANDO;
-                            tamañosHojas[i][j] = random(tamañoHojaMinimo, tamañoHojaMaximo);
-                            menguasHojas[i][j] = random(menguaHojaMinimo, menguaHojaMaximo);
+                            tamañosHojas[i][j] = random(30, 90);
+                            menguasHojas[i][j] = random(40, 200);
                         }
                     }
                 }
@@ -228,20 +191,20 @@ public class Perestroika extends ApplicationAdapter {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 if(estadosHojas[i][j] == HOJA_FLOTANDO) {
-                    batch.draw(hoja, 20+anchoColumna*(j+1)-tamañosHojas[i][j]/2, 40+altoFila*(i+1)-tamañosHojas[i][j]/4, tamañosHojas[i][j], tamañosHojas[i][j]/2);
+                    batch.draw(hoja, 20+100*(j+1)-tamañosHojas[i][j]/2, 40+100*(i+1)-tamañosHojas[i][j]/4, tamañosHojas[i][j], tamañosHojas[i][j]/2);
                 } else if(estadosHojas[i][j] == HOJA_HUNDIENDOSE) {
-                    batch.draw(agua, 20+anchoColumna*(j+1)-tamañoHojaMinimo/2, 40+altoFila*(i+1)-tamañoHojaMinimo/4, tamañoHojaMinimo, tamañoHojaMinimo/2);
+                    batch.draw(agua, 20+100*(j+1)-30/2, 40+100*(i+1)-30/4, 30, 30/2);
                 }
             }
         }
 
-        batch.draw(moneda, 20 + anchoColumna *columnas - 12, 40+altoFila*filas, 24, 24);
-        font.draw(batch, String.valueOf(level), 20+anchoColumna*columnas-(level < 10 ? 4 : 8), 40+altoFila*filas + 20 );
+        batch.draw(moneda, 20 + 100*columnas - 12, 40+100*filas, 24, 24);
+        font.draw(batch, String.valueOf(level), 20+100*columnas-(level < 10 ? 4 : 8), 40+100*filas + 20 );
 
         if(estadoRana == RANA_VIVA) {
-            batch.draw(rana, 20+anchoColumna*(ranaX+1)-12, 40+altoFila*(ranaY+1), 24, 24);
+            batch.draw(rana, 20+100*(ranaX+1)-12, 40+100*(ranaY+1), 24, 24);
         } else if(estadoRana == RANA_MUERTA){
-            batch.draw(cruz, 20+anchoColumna*(ranaX+1)-15, 40+altoFila*(ranaY+1)-15, 30, 45);
+            batch.draw(cruz, 20+100*(ranaX+1)-15, 40+100*(ranaY+1)-15, 30, 45);
         }
 
         for (int i = 0; i < 3; i++) {
